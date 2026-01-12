@@ -24,6 +24,9 @@ const contacts = require("./src/repositories/contacts");
 
 const app = express();
 
+const APP_NAME = "Chocolate Museum";
+const APP_VERSION = "1.0.0";
+
 //---------
 // SESSIONS
 //---------
@@ -61,6 +64,15 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
+
+//------------
+// HEALTH CHECK (FOR ALB & CI/CD)
+//------------
+
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
 
 //------------
 // VIEW ENGINE
@@ -480,6 +492,20 @@ app.get("/logout", (req, res) => {
 app.get("/", (req, res) => {
   res.render("home", { title: "Home" });
 });
+
+
+//------------
+// APP METADATA (FOR DEVOPS)
+//------------
+
+app.get("/meta", (req, res) => {
+  res.status(200).json({
+    app: APP_NAME,
+    version: APP_VERSION,
+  });
+});
+
+
 
 // secret pages for admin? linus 5 TODO
 
