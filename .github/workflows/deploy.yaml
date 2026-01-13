@@ -52,4 +52,4 @@ jobs:
         username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          curl -f http://localhost:3000/health  
+          curl -f http://localhost:3000/health
