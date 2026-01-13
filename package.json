@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon -e handlebars",
+    "start": "node server.js",
     "tailwind:css": "postcss public/styles/tailwind.css -o public/styles/style.css --watch",
     "ui": "browser-sync start --proxy localhost:3000 --files=./src/**/*.{html,js,hbs}",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -21,6 +21,7 @@
   "dependencies": {
     "bcrypt": "^5.1.1",
     "connect-sqlite3": "^0.9.16",
+    "dotenv": "^16.6.1",
     "express": "^4.22.1",
     "express-handlebars": "^8.0.1",
     "express-session": "^1.18.2",
@@ -30,7 +31,6 @@
     "@eslint/js": "^9.39.2",
     "autoprefixer": "^10.4.23",
     "browser-sync": "^3.0.4",
-    "dotenv": "^16.6.1",
     "eslint": "^9.39.2",
     "globals": "^15.15.0",
     "nodemon": "^3.1.11",

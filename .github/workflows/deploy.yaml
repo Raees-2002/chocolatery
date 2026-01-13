@@ -1,0 +1,50 @@
+name: Blue-Green Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Login to ECR
+      run: |
+        aws ecr get-login-password --region $AWS_REGION |
+        docker login --username AWS --password-stdin ${{ secrets.ECR_REPO }}
+
+    - name: Build Docker image
+      run: docker build -t app:latest .
+
+    - name: Tag & push image
+      run: |
+        docker tag app:latest ${{ secrets.ECR_REPO }}:latest
+        docker push ${{ secrets.ECR_REPO }}:latest
+
+    - name: Deploy to GREEN EC2
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.GREEN_EC2_IP }}
+        username: ec2-user
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          docker pull ${{ secrets.ECR_REPO }}:latest
+          docker stop chocolatery || true
+          docker rm chocolatery || true
+          docker run -d -p 3000:3000 --name chocolatery ${{ secrets.ECR_REPO }}:latest
+
+    - name: Health check
+      run: |
+        curl -f http://${{ secrets.GREEN_EC2_IP }}:3000/health

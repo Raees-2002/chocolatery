@@ -569,7 +569,7 @@ app.use((err, req, res, next) => {
 // LISTEN
 //-------
 
-const hostname = process.env.DEV_HOSTNAME || "localhost";
+const hostname = process.env.DEV_HOSTNAME || "0.0.0.0";
 const port = process.env.PORT || 3000;
 
 app.listen(port, hostname, () => {
