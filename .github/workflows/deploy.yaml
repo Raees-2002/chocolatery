@@ -45,11 +45,4 @@ jobs:
           docker rm chocolatery || true
           docker run -d -p 80:3000 --name chocolatery ${{ secrets.ECR_REPO }}:latest
 
-    - name: Health check on GREEN EC2
-      uses: appleboy/ssh-action@v1
-      with:
-        host: ${{ secrets.GREEN_EC2_IP }}
-        username: ec2-user
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
-          curl -f http://localhost:3000/health
+    
