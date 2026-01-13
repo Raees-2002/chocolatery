@@ -47,4 +47,4 @@ jobs:
 
     - name: Health check
       run: |
-        curl -f http://${{ secrets.GREEN_EC2_IP }}/health
+        curl -f http://${{ secrets.GREEN_EC2_IP }}:3000/health
