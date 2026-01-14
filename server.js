@@ -565,9 +565,6 @@ app.use((err, req, res, next) => {
   res.status(status).render("error", { message, status });
 });
 
-//-------
-// LISTEN
-//-------
 
 const hostname = process.env.DEV_HOSTNAME || "0.0.0.0";
 const port = process.env.PORT || 3000;
