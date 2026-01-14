@@ -20,7 +20,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Login to ECR
+    - name: Login to Amazon ECR
       run: |
         aws ecr get-login-password --region $AWS_REGION |
         docker login --username AWS --password-stdin ${{ secrets.ECR_REPO }}
@@ -28,7 +28,7 @@ jobs:
     - name: Build Docker image
       run: docker build -t app:latest .
 
-    - name: Tag & push image
+    - name: Tag & push image to ECR
       run: |
         docker tag app:latest ${{ secrets.ECR_REPO }}:latest
         docker push ${{ secrets.ECR_REPO }}:latest
@@ -43,6 +43,24 @@ jobs:
           docker pull ${{ secrets.ECR_REPO }}:latest
           docker stop chocolatery || true
           docker rm chocolatery || true
-          docker run -d -p 80:3000 --name chocolatery ${{ secrets.ECR_REPO }}:latest
+          docker run -d -p 3000:3000 --name chocolatery \
+          ${{ secrets.ECR_REPO }}:latest
 
-    
+    - name: Health check on GREEN
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.GREEN_EC2_IP }}
+        username: ec2-user
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          curl -f http://localhost:3000/health
+
+    - name: Switch ALB traffic to GREEN
+      run: |
+        aws elbv2 modify-listener \
+          --listener-arn ${{ secrets.ALB_LISTENER_ARN }} \
+          --default-actions Type=forward,TargetGroupArn=${{ secrets.GREEN_TG_ARN }}
+
+    - name: Rollback message on failure
+      if: failure()
+      run: echo "Deployment failed – rollback to blue"
