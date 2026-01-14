@@ -40,10 +40,10 @@ jobs:
         username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          docker pull ${{ secrets.ECR_REPO }}:latest
-          docker stop chocolatery || true
-          docker rm chocolatery || true
-          docker run -d -p 3000:3000 --name chocolatery \
+          sudo docker pull ${{ secrets.ECR_REPO }}:latest
+          sudo docker stop chocolatery || true
+          sudo docker rm chocolatery || true
+          sudo docker run -d -p 3000:3000 --name chocolatery \
           ${{ secrets.ECR_REPO }}:latest
 
     - name: Health check on GREEN
@@ -53,8 +53,14 @@ jobs:
         username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          curl -f http://localhost:3000/health
+          echo "Checking Docker containers..."
+          sudo docker ps
 
+          echo "Waiting for app to start..."
+          sleep 10
+
+          echo "Testing health endpoint..."
+          sudo curl -v http://localhost:3000/health
     - name: Switch ALB traffic to GREEN
       run: |
         aws elbv2 modify-listener \
