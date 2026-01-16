@@ -507,7 +507,7 @@ app.get("/meta", (req, res) => {
 
 
 
-// secret pages for admin? linus hjrgsjbhjgweuwrgj5 TODO
+// secret pages for admin? linus 5 TODO
 
 app.get("/about", (req, res) => {
   res.render("about", { title: "About" });
