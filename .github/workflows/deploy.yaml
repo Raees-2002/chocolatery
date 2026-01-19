@@ -65,15 +65,4 @@ jobs:
 
           echo "Testing health endpoint..."
           sudo curl -v http://localhost:3000/health
-    - name: Switch ALB traffic to GREEN
-      run: |
-        aws elbv2 modify-listener \
-          --listener-arn ${{ secrets.ALB_LISTENER_ARN }} \
-          --default-actions Type=forward,TargetGroupArn=${{ secrets.GREEN_TG_ARN }}
-
-    - name: Rollback message on failure
-      if: failure()
-      run: echo "Deployment failed – rollback to blue"
-
-
     
