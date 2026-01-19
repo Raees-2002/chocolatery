@@ -437,7 +437,7 @@ app.get("/register", (req, res) => {
   }
 });
 
-// POST REGISTER
+
 app.post("/register", async (req, res, next) => {
   if (req.session.isLoggedIn) {
     return res.redirect("/");
