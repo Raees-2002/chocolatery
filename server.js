@@ -70,7 +70,7 @@ app.use(express.static(path.join(__dirname, "public")));
 //------------
 
 app.get("/health", (req, res) => {
-  res.status(200).send("OK");
+  res.status(500).send("FAIL");
 });
 
 
